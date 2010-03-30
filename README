@@ -1,0 +1,26 @@
+Graph color project is based on coloring a graph with three differnet colors.
+
+	- Install django.
+	- Get into the directory graph_color and run this command.
+
+		python manage.py runserver --adminmedia=media
+	
+	- Open your web browser and paste this link in the URL bar
+
+		http://127.0.0.1:8000/map_color/
+
+	- Draw the required graph that can be colored using 3 colors.
+		- Click on Node button and then click in the canvas to create nodes.
+		- Click on Join button and then click in nodes to be joined.
+	
+	- Click on Solve button to color the graph woth three color red, yello and blue.
+ 
+
+Implementation Notes
+---------------------
+	This project is done using Django with HTML5, jquery ajax and javascript. Django web
+framwork is used to design the backend. Using HTML5 the canvas is drawn and javascript is used 
+to draw the graph with nodes and lines. Solve button will send the adjacency matrix using jquery
+ajax to Django python code where it will solve it using Constraint Satisfaction Problem (CSP).
+CSP is also written in python code which will send back the color combination to the js file and
+fill the color in each node accordingly.
