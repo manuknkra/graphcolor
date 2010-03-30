@@ -1,0 +1,142 @@
+<html>
+<script type="text/javascript" src="/media/jquery.js"></script>
+<script>
+
+$(function() {
+   $("#solve").click(function() {
+        $.post("http://127.0.0.1:8000/solve/", {matrix : ""+adj_matrix, count : i },function(data) {
+	var len = data.matrix.length;
+	var color = data.matrix.slice(1,len-1).split(',');
+	var point;
+	for (point in nodes) {
+		if (color[point]== 1) {
+			color_node(nodes[point][0],nodes[point][1],"red");
+		}
+		else if (color[point] == 2) {
+			color_node(nodes[point][0],nodes[point][1],"blue");
+		}
+		else if (color[point] == 3) {
+			color_node(nodes[point][0],nodes[point][1],"yellow");
+		}
+
+	}
+        //alert(color);
+        }, "json");
+        });
+});
+
+
+</script>
+<script>
+var x;
+var y;
+var r;
+var i = 0;
+var nodes = new Array();
+var node_flag = 0;
+var start_flag = 1;
+var end_flag = 0;
+var canvas;
+var ctx;
+var adj_matrix = new Array();
+var edge_point = 0;
+var start_point = 0;
+var end_point = 0;
+
+function color_node(x, y, color) {
+	ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI*2, true);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+}
+
+
+function init() {
+	canvas = document.getElementById('canvas')
+	ctx = canvas.getContext('2d');
+}
+
+function node(x, y, r) {
+	ctx.beginPath();
+	ctx.arc(x, y, r, 0, Math.PI*2, true);
+	ctx.closePath();
+	ctx.stroke();
+	nodes[i]=[x,y]; 
+	i = i +1;
+}
+
+function join(a,b) {
+	
+	if (check_point(a,b)) {
+		if ((start_flag == 1)&&(end_flag == 0)) {
+			start_join();
+		}
+		else if ((start_flag == 0) && (end_flag == 1)) {
+			end_join();
+		}
+	}
+}
+
+
+function check_point(a,b) {
+	var point;
+	for (point in nodes) {
+		if (((nodes[point][0]-5)<=a)&&(a<=(nodes[point][0]+5)) && ((nodes[point][1]-5)<=b)&&(b<=(nodes[point][1]+5))) {
+			x = nodes[point][0];
+			y = nodes[point][1];
+			edge_point = point++;
+			return true;
+			break;
+		}
+	}
+}
+
+function start_join () {
+	ctx.moveTo(x,y);
+	start_point = edge_point;
+	start_flag = 0;
+	end_flag = 1;
+}
+
+function end_join () {
+	ctx.lineTo(x,y);
+	ctx.stroke();
+	end_point = edge_point;
+	adj_matrix[start_point*i + end_point] = 1;
+	adj_matrix[end_point*i + start_point] = 1;
+	end_flag = 0;
+	start_flag = 1;
+}
+
+function mouse_click(evt) {
+	x = evt.pageX - canvas.offsetLeft;
+	y = evt.pageY - canvas.offsetTop;
+}
+
+function draw(evt) {
+	init();
+	mouse_click(evt);
+	if (node_flag == 1) {
+		node(x, y, 5);
+	}
+	else {
+		join(x,y);
+	}
+}
+
+</script>
+
+<body>
+
+<canvas id ="canvas" width="300" height="225" style ="border : 1px dotted" onclick ="draw(event); return false"></canvas>
+
+<p>
+<button onclick = "node_flag = 1;">Node</button>
+<button onclick = "node_flag = 0;">Join</button>
+<button id="solve">Solve</button>
+</p>
+
+</body>
+</html>
